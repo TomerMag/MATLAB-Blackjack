@@ -1,11 +1,21 @@
-Money=input('how much money do you have? '); %register the amount of money the user has
+Money=str2double(input('how much money do you have? ','s')); %register the amount of money the user has
+
+%check for numeric input
+while isnan(Money) ~= 0 || Money <= 0
+    fprintf('illigal input \n');
+    Money=str2double(input('how much money do you have? ','s'));
+end
+
 Deck=ceil(0.25:0.25:13); %create vector holding all cards
 Hand=[];
 pchand=[];
 
 %shuffle the deck randomly
 for i=1:round(randi(5))
-Deck=shuffle(Deck,round(randi(5)));
+Deck=shuffle(Deck,round(randi(4)+1));
+fprintf('%g\n',i);
+disp(Deck);
+fprintf ('\n');
 end
 
 % play rounds untill there are 10 or less cards in deck or player lost all
@@ -48,11 +58,11 @@ function [rDeck, earn]=oneround(bet,pchand,Hand,Deck)
     %if player hand value lower than 21 ask him to take another card until
     %surpasses 21 or doesnt want another card
     if hand(Hand) < 21
-        answer = input('do you want to take another card? 1 = yes / 0 = no \n');
+        answer = input('do you want to take another card? 1 = yes / 0 = no \n','s');
 
         %if given unwanted input ask to give wanted input untill given
-        while answer ~= 1 && answer ~= 0
-            answer=input('please enter 1 or 0 \n');
+        while answer ~= 1 && answer ~= 0 && isnan(bet) ~= 0
+            answer=input('please enter 1 or 0 \n','s');
         end
 
         %gives player another card from deck and shows it so him
@@ -64,9 +74,9 @@ function [rDeck, earn]=oneround(bet,pchand,Hand,Deck)
             
             %ask the player if he wants another card
             if hand(Hand) < 21
-                answer = input('do you want to take another card? 1 = yes / 0 = no \n');
-                while answer ~= 1 && answer ~= 0
-                    answer=input('please enter 1 or 0 \n');
+                answer = input('do you want to take another card? 1 = yes / 0 = no \n','s');
+                while answer ~= 1 && answer ~= 0 && isnan(bet) ~= 0
+                    answer=input('please enter 1 or 0 \n','s');
                 end
             end
         end
@@ -89,14 +99,21 @@ end
 
 %checks if player entered realistic amount of money he wants to bet
 function bet=bet(money) 
-    bet=input('how much money are you willing to bet? \n');
-    while bet > money || bet <= 0
+    bet=str2double(input('how much money are you willing to bet? \n','s'));
+
+    %check input lower than amount owned and higher than 0 and if numeric
+    while bet > money | bet <= 0 | isnan(bet) ~= 0
+        if bet <= 0
+            fprintf('you cannot bet 0 or less coins \n');
+            bet=str2double(input('how much money are you willing to bet? \n','s'));
+        end
+        if isnan(bet) ~= 0
+            fprintf('illigal input \n');
+            bet=str2double(input('how much money are you willing to bet? \n','s'));
+        end
         if bet > money
             fprintf('you have only %g coins. please enter a lower sum of money. \n',money);
-            bet=input('how much money are you willing to bet? \n');
-        else
-            fprintf('you cannot bet 0 or less coins \n');
-            bet=input('how much money are you willing to bet? \n');
+            bet=str2double(input('how much money are you willing to bet? \n','s'));
         end
     end
 end
@@ -125,6 +142,7 @@ function vecshuffle=shuffle(vec,n)
     
     end
     vecshuffle = push(vecshuffle,vec);
+    vecshuffle = transpose(vecshuffle);
 end
 
 %draws a single random card from deck
